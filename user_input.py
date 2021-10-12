@@ -98,4 +98,7 @@ if(prompt == 'y'):
     #Save the updated dataframe back to the SQL database, erase existing data
     df.to_sql('PersonalData', engine, if_exists='replace', index=False)
     # Let the user know the data was saved successfully
-    print("Entry has been entered into the database")
+    print("Entry has been successfully saved to the database")
+
+# Added line in case user says "N" to first prompt
+print("Operation aborted, have a nice day!")
