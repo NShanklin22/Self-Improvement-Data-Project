@@ -80,7 +80,7 @@ def addToDataframe(df,category, date, duration):
 
     return df
 
-
+# Section creates a dummy dataframe of expected dates and compares it to the saved dataframe
 ##########################
 # Section to take in new data and add it to the respective database table
 prompt = input("Would you like to enter new data y/n? ")
@@ -100,5 +100,6 @@ if(prompt == 'y'):
     # Let the user know the data was saved successfully
     print("Entry has been successfully saved to the database")
 
-# Added line in case user says "N" to first prompt
-print("Operation aborted, have a nice day!")
+else:
+    # Added line in case user says "N" to first prompt
+    print("Operation aborted, have a nice day!")
