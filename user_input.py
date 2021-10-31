@@ -1,20 +1,19 @@
-from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+import pdb
+import datetime
 import sqlite3
 import pandas as pd
 import sqlalchemy
 import datetime
 
 # Create connection to SQL and an engine for SQLalchemy
-connection = sqlite3.connect('Data\PersonalData.db')
+connection = sqlite3.connect('D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data\PersonalData.db')
 cursor = connection.cursor()
-engine = sqlalchemy.create_engine('sqlite:///Data/PersonalData.db').connect()
+engine = sqlalchemy.create_engine('sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()
 
 # Create a temporary dataframe to manipulate data from SQL database
 df = pd.read_sql_table('PersonalData',engine,index_col=1)
 
-###Functions###
+###Functions###y
 #Asks user for the category of the data
 def getCategory():
     while True:
