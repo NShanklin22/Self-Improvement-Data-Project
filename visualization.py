@@ -6,6 +6,12 @@ from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 
 #Functions
+def makeBarGraph():
+    return
+
+
+
+
 
 #Code Start
 connection = sqlite3.connect('Data/PersonalData.db')

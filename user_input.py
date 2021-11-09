@@ -1,3 +1,5 @@
+# This program takes in a user input and stores it to an SQL database
+
 import pdb
 import datetime
 import sqlite3
