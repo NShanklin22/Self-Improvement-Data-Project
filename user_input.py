@@ -8,7 +8,7 @@ import sqlalchemy
 import datetime
 
 # Create connection to SQL and an engine for SQLalchemy
-connection = sqlite3.connect('D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data\PersonalData.db')
+connection = sqlite3.connect("D:\\Libraries\\Desktop\\Python\\Projects\\Self_Improvement_Data\\Data\\PersonalData.db")
 cursor = connection.cursor()
 engine = sqlalchemy.create_engine('sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()
 
@@ -78,29 +78,28 @@ def addToDataframe(df,category, date, duration):
 
     #Append the main dataframe with the new row
     df = df.append(new_row, ignore_index=True)
+    #Sort values by date
+    df.sort_values('date', inplace=True)
+    # Merge the data for duplicate dates
+    df = df.groupby(['date'], as_index=False).sum()
 
     return df
 
 # Section creates a dummy dataframe of expected dates and compares it to the saved dataframe
 ##########################
 # Section to take in new data and add it to the respective database table
-prompt = input("Would you like to enter new data y/n? ")
-if(prompt == 'y'):
-    #Get User input of category,date, and duration
-    category = getCategory()
-    date = getDate()
-    duration = getDuration()
-    #Add Data to respective table based off of user input
-    df = addToDataframe(df,category,date,duration)
-    #Sort the data by date
-    df.sort_values('date',inplace=True)
-    #Merge the data for duplicate dates
-    df = df.groupby(['date'],as_index=False).sum()
-    #Save the updated dataframe back to the SQL database, erase existing data
-    df.to_sql('PersonalData', engine, if_exists='replace', index=False)
-    # Let the user know the data was saved successfully
-    print("Entry has been successfully saved to the database")
+#Get User input of category,date, and duration
+# category = getCategory()
+# date = getDate()
+# duration = getDuration()
+# #Add Data to respective table based off of user input
+# df = addToDataframe(df,category,date,duration)
+# #Sort the data by date
+# df.sort_values('date',inplace=True)
+# #Merge the data for duplicate dates
+# df = df.groupby(['date'],as_index=False).sum()
+# #Save the updated dataframe back to the SQL database, erase existing data
+# df.to_sql('PersonalData', engine, if_exists='replace', index=False)
+# # Let the user know the data was saved successfully
+# print("Entry has been successfully saved to the database")
 
-else:
-    # Added line in case user says "N" to first prompt
-    print("Operation aborted, have a nice day!")
