@@ -7,13 +7,27 @@ import matplotlib.dates as mdates
 
 
 # Functions
-def createBarGraph():
+def createBarChart(DataRange):
+    # Create a bar chart
+    labels = ['Programming', 'Gaming', 'Electronics', 'Design']
+    DateTimeRange = pd.to_datetime(DataRange['date'])
+    data = DataRange.sum()
+    data = data / 60
+    fig1, ax1 = plt.subplots()
+    ax1.bar(labels, data, color=['green', 'red', 'blue', 'purple'])
+    ax1.set_ylabel('Category Totals (m)')
+    ax1.set_xlabel('Category')
+    plt.title(label="Time Spent Per Category from: {} to: {}".format(DateTimeRange.iloc[0].date(), DateTimeRange.iloc[-1].date()),
+              fontsize=14, loc="center")
+    plt.grid()
+    plt.show()
     return
 
-
-def createPieChart(df):
+def createPieChart(DataRange):
     # Determine the total for each category
-    CatTotal = df.sum()
+    DateTimeRange = pd.to_datetime(DataRange['date'])
+    DataRange = DataRange.drop('date',axis=1)
+    CatTotal = DataRange.sum()
     RangeTotal = CatTotal.sum()
     CatPercent = (CatTotal / RangeTotal * 100)
 
@@ -23,26 +37,26 @@ def createPieChart(df):
     ax1.pie(CatPercent, labels=labels, autopct='%1.1f%%',
             shadow=True, startangle=90)
     ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    plt.title(label="Percent Time per Category", fontsize=18, loc="left")
+    plt.title(label="Percent Time per Category from {} to {}".format(DateTimeRange.iloc[0].date(),DateTimeRange.iloc[-1].date()), fontsize=18, loc="left")
+    fig1.set_size_inches(10.5, 10.5)
     plt.show()
 
-
-def createLineChart(df):
+def createLineChart(DataRange):
     # Create a new dataframe with cumulative sums of each category
-    sums = df[["gaming", "programming", "design", "electronics"]].cumsum()
+    sums = DataRange[["gaming", "programming", "design", "electronics"]].cumsum()
     # Create the figure and axes
     fig = plt.figure()
     ax = plt.axes()
     weight = 60
     # Set the dates using mdates for easier formating
-    df['date'] = pd.to_datetime(df['date'],format='%m/%d/%y')
-    dates = mdates.date2num(df['date'])
+    DataRange['date'] = pd.to_datetime(DataRange['date'],format='%m/%d/%y')
+    dates = mdates.date2num(DataRange['date'])
 
     # Create a line plot of the x and y variables
-    ax.plot(df.date, sums.gaming / weight, label="Gaming")
-    ax.plot(df.date, sums.programming / weight, label="Programming")
-    ax.plot(df.date, sums.electronics / weight, label="Electronics")
-    ax.plot(df.date, sums.design / weight, label="Design")
+    ax.plot(DataRange.date, sums.gaming / weight, label="Gaming")
+    ax.plot(DataRange.date, sums.programming / weight, label="Programming")
+    ax.plot(DataRange.date, sums.electronics / weight, label="Electronics")
+    ax.plot(DataRange.date, sums.design / weight, label="Design")
     # Additional fromating of the table
     ax.set_title('Category Values Vs Time')
     ax.set_ylabel('Category Data (m)')
@@ -55,31 +69,3 @@ def createLineChart(df):
     fig.autofmt_xdate()
     fig.set_size_inches(18.5, 10.5)
     plt.show()
-
-# # Code Start
-# connection = sqlite3.connect('Data/PersonalData.db')
-# cursor = connection.cursor()
-# engine = sqlalchemy.create_engine('sqlite:///Data/PersonalData.db').connect()
-#
-# # Create dataframe from SQL database
-# df = pd.read_sql_table('PersonalData', engine, index_col=1)
-#
-# # Read csv daTa that I cleaned up in Jupyter Notebooks
-# df['electronics'] = pd.to_numeric(df['electronics'], errors='coerce')
-# df['programming'] = pd.to_numeric(df['programming'], errors='coerce')
-# df['gaming'] = pd.to_numeric(df['gaming'], errors='coerce')
-# df['design'] = pd.to_numeric(df['design'], errors='coerce')
-#
-# # Add new columns based of calculation on existing column data
-# df['cumgaming'] = df['gaming'].cumsum(axis=0)
-# df['cumprogramming'] = df['programming'].cumsum(axis=0)
-# df['cumelectronics'] = df['electronics'].cumsum(axis=0)
-# df['cumdesign'] = df['design'].cumsum(axis=0)
-#
-# # Plot the cumulative data
-# plt.plot(df.date, df.cumgaming / 60, label="Gaming")
-# plt.plot(df.date, df.cumprogramming / 60, label="Programming")
-# plt.plot(df.date, df.cumelectronics / 60, label="Electronics")
-# plt.plot(df.date, df.cumdesign / 60, label="Design")
-# plt.legend()
-# plt.show()

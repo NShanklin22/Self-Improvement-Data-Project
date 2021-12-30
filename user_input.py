@@ -61,8 +61,7 @@ def get_sec(time_str):
     h, m, s = time_str.split(':')
     return int(h) * 3600 + int(m) * 60 + int(s)
 
-# Function to add new entry to the local dataframe
-def addToDataframe(df,category, date, duration):
+def addEntryToDataframe(df,category, date, duration):
     #Use the match function to update the dataframe depending on catagory passed into this function
     if(category == 'programming'):
         new_data = {'date':str(date),'programming':duration,'gaming':0,'electronics':0,'design':0}
@@ -84,22 +83,4 @@ def addToDataframe(df,category, date, duration):
     df = df.groupby(['date'], as_index=False).sum()
 
     return df
-
-# Section creates a dummy dataframe of expected dates and compares it to the saved dataframe
-##########################
-# Section to take in new data and add it to the respective database table
-#Get User input of category,date, and duration
-# category = getCategory()
-# date = getDate()
-# duration = getDuration()
-# #Add Data to respective table based off of user input
-# df = addToDataframe(df,category,date,duration)
-# #Sort the data by date
-# df.sort_values('date',inplace=True)
-# #Merge the data for duplicate dates
-# df = df.groupby(['date'],as_index=False).sum()
-# #Save the updated dataframe back to the SQL database, erase existing data
-# df.to_sql('PersonalData', engine, if_exists='replace', index=False)
-# # Let the user know the data was saved successfully
-# print("Entry has been successfully saved to the database")
 

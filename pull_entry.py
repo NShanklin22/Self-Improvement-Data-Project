@@ -45,6 +45,7 @@ def getDataByDateRange():
     ReqRangeEnd = input('Please enter an end day (MM/DD/YY) : ')
     print('Pulling data from {} to {}'.format(ReqRangeStart, ReqRangeEnd))
     DataRange = df.where((df['date'] >= ReqRangeStart) & (df['date'] <= ReqRangeEnd)).dropna()
+    DataRange['date'] = pd.to_datetime(DataRange['date'])
     return DataRange
 
 # Return a dataframe by providing a certain date range
