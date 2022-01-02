@@ -10,13 +10,15 @@ import datetime
 # Create connection to SQL and an engine for SQLalchemy
 connection = sqlite3.connect("D:\\Libraries\\Desktop\\Python\\Projects\\Self_Improvement_Data\\Data\\PersonalData.db")
 cursor = connection.cursor()
-engine = sqlalchemy.create_engine('sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()
+engine = sqlalchemy.create_engine(
+    'sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()
 
 # Create a temporary dataframe to manipulate data from SQL database
-df = pd.read_sql_table('PersonalData',engine,index_col=1)
+df = pd.read_sql_table('PersonalData', engine, index_col=1)
 
-###Functions###y
-#Asks user for the category of the data
+
+###Functions###
+# Asks user for the category of the data
 def getCategory():
     while True:
         value = str(input("Please Enter the data category (programming,gaming,electronics,design): "))
@@ -26,7 +28,8 @@ def getCategory():
             print("That is not a valid category, please try again")
     return value
 
-#Asks user for the date of the data
+
+# Asks user for the date of the data
 def getDate():
     while True:
         value = str(input("Please Enter the data date (MM/DD/YY): "))
@@ -42,7 +45,8 @@ def getDate():
         else:
             print("That is not a valid date")
 
-#Asks user for the duration value of the category and converts to seconds
+
+# Asks user for the duration value of the category and converts to seconds
 def getDuration():
     # Converts time in HH:MM:SS format to a integer in seconds
     while True:
@@ -56,31 +60,33 @@ def getDuration():
         else:
             return int(h) * 3600 + int(m) * 60 + int(s)
 
-#Used to convert HH:MM:SS to seconds
+
+# Used to convert HH:MM:SS to seconds
 def get_sec(time_str):
     h, m, s = time_str.split(':')
     return int(h) * 3600 + int(m) * 60 + int(s)
 
-def addEntryToDataframe(df,category, date, duration):
-    #Use the match function to update the dataframe depending on catagory passed into this function
-    if(category == 'programming'):
-        new_data = {'date':str(date),'programming':duration,'gaming':0,'electronics':0,'design':0}
-    if(category == 'gaming'):
-        new_data = {'date':str(date),'programming':0,'gaming':duration,'electronics':0,'design':0}
-    if(category == 'electronics'):
-        new_data = {'date':str(date),'programming':0,'gaming':0,'electronics':duration,'design':0}
-    if(category == 'design'):
-        new_data = {'date':str(date),'programming':0,'gaming':0,'electronics':0,'design':duration}
 
-    #Create a new single row series based off of the new data
+def addEntryToDataframe(df, category, date, duration):
+    # Use the match function to update the dataframe depending on catagory passed into this function
+    if (category == 'programming'):
+        new_data = {'date': str(date), 'programming': duration, 'gaming': 0, 'electronics': 0, 'design': 0}
+    if (category == 'gaming'):
+        new_data = {'date': str(date), 'programming': 0, 'gaming': duration, 'electronics': 0, 'design': 0}
+    if (category == 'electronics'):
+        new_data = {'date': str(date), 'programming': 0, 'gaming': 0, 'electronics': duration, 'design': 0}
+    if (category == 'design'):
+        new_data = {'date': str(date), 'programming': 0, 'gaming': 0, 'electronics': 0, 'design': duration}
+
+    # Create a new single row series based off of the new data
     new_row = pd.DataFrame(new_data, index=[0])
 
-    #Append the main dataframe with the new row
+    # Append the main dataframe with the new row
     df = df.append(new_row, ignore_index=True)
-    #Sort values by date
+    # Sort values by date
+    df['date'] = pd.to_datetime(df['date'])
     df.sort_values('date', inplace=True)
     # Merge the data for duplicate dates
     df = df.groupby(['date'], as_index=False).sum()
 
     return df
-
