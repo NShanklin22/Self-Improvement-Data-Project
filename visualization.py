@@ -33,15 +33,14 @@ def createDateRangeBarChart(DataRange):
     return
 
 def createPieChart(DataRange):
-
-    reqPrint = input("would you like to print this chart? (y/n): ")
-
     # Determine the total for each category
     DateTimeRange = pd.to_datetime(DataRange['date'])
     DataRange = DataRange.drop('date',axis=1)
     CatTotal = DataRange.sum()
     RangeTotal = CatTotal.sum()
     CatPercent = (CatTotal / RangeTotal * 100)
+    DateStart = datetime.strftime(DateTimeRange.iloc[0].date(),"%m-%d-%y")
+    DateEnd = datetime.strftime(DateTimeRange.iloc[-1].date(),"%m-%d-%y")
 
     # Create the pie chart and set the settings
     labels = 'Programming', 'Gaming', 'Electronics', 'Design'
@@ -51,10 +50,9 @@ def createPieChart(DataRange):
     ax1.pie(CatPercent, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
     ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
-    plt.title(label="Percent Time per Category from {} to {}".format(DateTimeRange.iloc[0].date(),DateTimeRange.iloc[-1].date()), fontsize=18, loc="left")
-    if reqPrint == "y":
-        my_path = os.path.abspath(__file__)
-        plt.savefig(os.path.join(my_path, '..\Charts\PieChart_{}.png'.format(datetime.today().date())))
+    plt.title(label="Percent Time per Category from {} to {}".format(DateStart,DateEnd), fontsize=18, loc="left")
+    my_path = os.path.abspath(__file__)
+    plt.savefig(os.path.join(my_path, '..\Charts\PieChart_S{}_E{}.png'.format(DateStart,DateEnd)))
     plt.show()
 
 def createLineChart(DataRange):
