@@ -1,4 +1,6 @@
 # This program will serve as the main navigation program, all others will be called from here
+import time
+
 import visualization
 from user_input import *
 from pull_entry import *
@@ -32,8 +34,9 @@ def mainMenu():
         # Create the option menu
         print('1 - Enter new data to the database')
         print('2 - Read old data from the database')
-        print('3 - Help Page')
-        print('4 - Exit the program')
+        print('3 - Analyze Data')
+        print('4 - Help Page')
+        print('5 - Exit the program')
         # Asks the user for their input')
         MenuSelect = input('\nPlease select a menu option: ')
         # Menu option 1 will enter new data, uses functions from user input program
@@ -42,10 +45,13 @@ def mainMenu():
         elif MenuSelect == '2':
             pullEntryMenu()
         elif MenuSelect == '3':
-            helpMenu()
+            analysisMenu(df)
         elif MenuSelect == '4':
-            exit()
+            helpMenu()
+        elif MenuSelect == '5':
             print("Program exiting...")
+            time.sleep(2)
+            exit()
         else:
             print('That is not a valid option')
 
@@ -57,7 +63,6 @@ def addNewDataEntry():
     df = addEntryToDataframe(df, category, date, duration)
     df.to_sql('PersonalData', engine, if_exists='replace', index=False)
     print("Entry has been successfully saved to the database")
-    return df
 
 def pullEntryMenu():
     df = pd.read_sql_table('PersonalData', engine, index_col=1)
@@ -67,25 +72,45 @@ def pullEntryMenu():
     print('2 - Select all data')
     print('3 - Select data by month ')
     print('4 - Select data from today')
-    print('5 - Return to Main Menu')
+    print('5 - Select data from this week')
+    print('6 - Return to Main Menu')
     MenuSelect = input('\nSelect a menu option: ')
     print("\n")
     # Pull different data based off of user input
     if MenuSelect == '1':
-        DataRange = getDataByDateRange()
+        DataRange = getDataByDateRange(df)
     elif MenuSelect == '2':
         DataRange = df
     elif MenuSelect == '3':
-        DataRange = getDataByMonth()
+        DataRange = getDataByMonth(df)
     elif MenuSelect == '4':
         DataRange = df.iloc[-1].to_frame().T
         DataRange['date'] = pd.to_datetime(DataRange['date'])
     elif MenuSelect == '5':
+        DataRange = getDataByCurrentWeek(df)
+    elif MenuSelect == '6':
         mainMenu()
+
     visualMenu(DataRange)
 
 # Function will be used by the pullEntry function and work with visualMenu()
-def dataAnalysisMenu(df):
+def analysisMenu(df):
+    # Display menu options and request a input
+    print(("Data Analysis Options: "))
+    print('1 - Run cumulative data animation (Line Chart)')
+    print('2 - Run % weekly data animation (Pie Chart)')
+    print('3 - Analyze Gaming Trends (DEV)')
+    print('4 - Calculate Key Metrics')
+    MenuSelect = input('\nSelect a menu option: ')
+    if MenuSelect == '1':
+        animateLineGraph(df)
+    elif MenuSelect == '2':
+        DataRange = df
+    elif MenuSelect == '3':
+        return
+    elif MenuSelect == '4':
+        return
+
     return
 
 # Function for selecting the visualization method
@@ -106,6 +131,7 @@ def visualMenu(DataRange):
         elif MenuSelect == '3':
             createBarChart(DataRange)
         elif MenuSelect == '4':
+            showLoading()
             visualization.createLineChart(DataRange)
         elif MenuSelect == '5':
             pullEntryMenu()
@@ -120,7 +146,7 @@ def visualMenu(DataRange):
 
 # Function to display helpfull information about the menu
 def helpMenu():
-    open("Help.txt")
+    open("readme.txt")
     input("Press any key to return to the main menu...")
 
 

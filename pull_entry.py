@@ -11,35 +11,31 @@ from datetime import date
 pd.options.mode.chained_assignment = None
 from datetime import timedelta
 import numpy as np
-
-# Connect to the database
-connection = sqlite3.connect('D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data\PersonalData.db')
-cursor = connection.cursor()
-engine = sqlalchemy.create_engine('sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()
-df = pd.read_sql_table('PersonalData',engine,index_col=1)
+from otherFunctions import *
 
 # Functions
-
-# Creates a dataframe of weeks in year by # and the start date
-def createWeekMask():
-    YearRange = pd.date_range(start='01/01/2021', end='12/31/2021', freq='W-SAT')
-    WeekMask = pd.DataFrame(YearRange, columns=['WeekStart'])
-    return WeekMask
-
 # Determine the current week based off of todays date
 def getCurrentWeek():
-    WeekMask = createWeekMask()
+    WeekMask = getWeekMask()
     today = datetime.today()
     CurrentWeek = WeekMask.where((WeekMask < today) & (WeekMask > today - timedelta(days=7))).dropna()
     CurrentWeek['WeekNum'] = CurrentWeek.index
     print("The current week is: {} \nThe week started on: {}".format(CurrentWeek.iloc[0]['WeekNum'],CurrentWeek.iloc[0]['WeekStart'].date()))
 
 # Return a dataframe of a certain week based off of a provided number
-def getDataByWeekNum(WeekNum):
-    return
+def getDataByCurrentWeek(df):
+    WeekMask = getWeekMask()
+    today = datetime.today()
+    df['date'] = pd.to_datetime(df['date']).dt.date
+    RangeEnd = datetime.today().date()
+    RangeStart_temp = WeekMask.where((WeekMask < today) & (WeekMask > today - timedelta(days=7))).dropna()
+    RangeStart_temp = RangeStart_temp.iloc[0]
+    RangeStart = RangeStart_temp.iloc[0].date()
+    DataRange = df.where((df['date'] >= RangeStart) & (df['date'] <= RangeEnd)).dropna()
+    return DataRange
 
 # Return a dataframe by providing a certain date range
-def getDataByDateRange():
+def getDataByDateRange(df):
     # Simple code block for requesting a date range from the user and pulling data
     ReqRangeStart = input('Please enter a start day (MM/DD/YY) : ')
     ReqRangeEnd = input('Please enter an end day (MM/DD/YY) : ')
@@ -49,7 +45,7 @@ def getDataByDateRange():
     return DataRange
 
 # Return a dataframe by providing a certain date range
-def getDataByMonth():
+def getDataByMonth(df):
     months = {1:"January",2:"February",3:"March",4:"April",5:"May",6:"June",7:"July",8:"August",9:"September",10:"October",11:"November",12:"December"}
     df['date'] = pd.to_datetime(df['date'])
     # Simple code block for pulling data by a given month

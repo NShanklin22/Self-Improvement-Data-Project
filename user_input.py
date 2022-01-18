@@ -6,6 +6,7 @@ import sqlite3
 import pandas as pd
 import sqlalchemy
 import datetime
+from datetime import datetime
 
 # Create connection to SQL and an engine for SQLalchemy
 connection = sqlite3.connect("D:\\Libraries\\Desktop\\Python\\Projects\\Self_Improvement_Data\\Data\\PersonalData.db")
@@ -32,16 +33,19 @@ def getCategory():
 # Asks user for the date of the data
 def getDate():
     while True:
-        value = str(input("Please Enter the data date (MM/DD/YY): "))
+        userDate = str(input("Please Enter the data date (MM/DD/YY) or t for today: "))
         isValidDate = True
+        if(userDate == 't'):
+            userDate = datetime.strftime(datetime.today().date(),'%m/%d/%y')
+            return userDate
         try:
-            month, day, year = value.split('/')
-            datetime.datetime(int(year), int(month), int(day))
+            month, day, year = userDate.split('/')
+            datetime(int(year), int(month), int(day))
         except ValueError:
             isValidDate = False
 
         if isValidDate:
-            return value
+            return userDate
         else:
             print("That is not a valid date")
 
