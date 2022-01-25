@@ -14,14 +14,6 @@ import numpy as np
 from otherFunctions import *
 
 # Functions
-# Determine the current week based off of todays date
-def getCurrentWeek():
-    WeekMask = getWeekMask()
-    today = datetime.today()
-    CurrentWeek = WeekMask.where((WeekMask < today) & (WeekMask > today - timedelta(days=7))).dropna()
-    CurrentWeek['WeekNum'] = CurrentWeek.index
-    print("The current week is: {} \nThe week started on: {}".format(CurrentWeek.iloc[0]['WeekNum'],CurrentWeek.iloc[0]['WeekStart'].date()))
-
 # Return a dataframe of a certain week based off of a provided number
 def getDataByCurrentWeek(df):
     WeekMask = getWeekMask()

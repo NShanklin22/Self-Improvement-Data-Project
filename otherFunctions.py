@@ -25,14 +25,27 @@ def getWeekMask():
     WeekMask = pd.DataFrame(YearRange, columns=['WeekStart'])
     return WeekMask
 
+# Determine the current week based off of todays date
+def getCurrentWeek():
+    WeekMask = getWeekMask()
+    today = datetime.today()
+    CurrentWeek = WeekMask.where((WeekMask < today) & (WeekMask > today - timedelta(days=7))).dropna()
+    CurrentWeek['WeekNum'] = CurrentWeek.index + 1
+    return CurrentWeek
 
+def printCurrentWeek():
+    CurrentWeek = getCurrentWeek()
+    WeekStart = datetime.strftime(CurrentWeek.iloc[0]['WeekStart'].date(),"%m-%d-%y")
+    return ("The current week is: {} \nThe week started on: {}".format(CurrentWeek.iloc[0]['WeekNum'],WeekStart))
+
+# Function to simulate loading for user
 def showLoading():
     print("Loading.")
-    time.sleep(1)
+    time.sleep(.5)
     print("Loading..")
-    time.sleep(1)
+    time.sleep(.5)
     print("Loading...")
-    time.sleep(1)
+    time.sleep(.5)
 
 
 def timeConversion(InputTime):
