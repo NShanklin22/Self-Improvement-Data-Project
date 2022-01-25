@@ -12,3 +12,5 @@ For this project I created a command line menu structure with option to either e
 The data can be pulled by current day, month (int 1-12), date range, and current week
 
 After pulling data the user can create various matplotlib graphs with the data
+
+As a result of working on this project I have greatly increased my programming study time and reduced the amount of time I play video games. 
