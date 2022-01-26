@@ -14,7 +14,7 @@ import sqlalchemy
 import datetime
 
 # Create connection to SQL and an engine for SQLalchemy
-connection = sqlite3.connect("D:\\Libraries\\Desktop\\Python\\Projects\\Self_Improvement_Data\\Data\\PersonalData.db")
+connection = sqlite3.connect("/data\\PersonalData.db")
 cursor = connection.cursor()
 engine = sqlalchemy.create_engine('sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()
 
@@ -34,7 +34,7 @@ def mainMenu():
         # Create the option menu
         print('1 - Enter new data to the database')
         print('2 - Read old data from the database')
-        print('3 - Analyze Data')
+        print('3 - Analyze data')
         print('4 - Help Page')
         print('5 - Exit the program')
         # Asks the user for their input')
@@ -96,7 +96,7 @@ def pullEntryMenu():
 # Function will be used by the pullEntry function and work with visualMenu()
 def analysisMenu(df):
     # Display menu options and request a input
-    print(("Data Analysis Options: "))
+    print(("data Analysis Options: "))
     print('1 - Run cumulative data animation (Line Chart)')
     print('2 - Run % weekly data animation (Pie Chart)')
     print('3 - Analyze Gaming Trends (DEV)')

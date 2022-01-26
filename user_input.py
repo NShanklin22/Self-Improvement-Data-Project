@@ -9,7 +9,7 @@ import datetime
 from datetime import datetime
 
 # Create connection to SQL and an engine for SQLalchemy
-connection = sqlite3.connect("D:\\Libraries\\Desktop\\Python\\Projects\\Self_Improvement_Data\\Data\\PersonalData.db")
+connection = sqlite3.connect("/data\\PersonalData.db")
 cursor = connection.cursor()
 engine = sqlalchemy.create_engine(
     'sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()

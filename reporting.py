@@ -14,7 +14,7 @@ import sqlalchemy
 from fpdf import FPDF
 
 # Create connection to SQL and an engine for SQLalchemy
-connection = sqlite3.connect("D:\\Libraries\\Desktop\\Python\\Projects\\Self_Improvement_Data\\Data\\PersonalData.db")
+connection = sqlite3.connect("/data\\PersonalData.db")
 cursor = connection.cursor()
 engine = sqlalchemy.create_engine('sqlite:///D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Data/PersonalData.db').connect()
 
@@ -39,7 +39,7 @@ print(datetime.strftime(WeekStart,'%m/%d/%y'))
 class PDF(FPDF):
     def header(self):
         # Logo
-        self.image('Images/Icon.png', 10, 8, 33)
+        self.image('images/Icon.png', 10, 8, 33)
 
         self.set_font('Arial','B',20)
         w = self.get_string_width(title) + 6
@@ -62,4 +62,4 @@ pdf = PDF()
 pdf.add_page()
 pdf.multi_cell(0, 10, str(printCurrentWeek()))
 pdf.image('D:\Libraries\Desktop\Python\Projects\Self_Improvement_Data\Charts\PieChart_S01-01-22_E01-22-22.png',35,70, 150,150)
-pdf.output('Reports/Report{}.pdf'.format("1"), 'F')
+pdf.output('reports/Report{}.pdf'.format("1"), 'F')

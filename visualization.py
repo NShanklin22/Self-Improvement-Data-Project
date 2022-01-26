@@ -82,7 +82,7 @@ def createLineChart(DataRange):
 
     # Additional fromating of the table
     ax.set_title('Category Values Vs Time')
-    ax.set_ylabel('Category Data (m)')
+    ax.set_ylabel('Category data (m)')
     ax.set_xlabel('Date')
     ax.xaxis.set_major_locator(mdates.DayLocator(interval=X_Interval))
     ax.xaxis.set_minor_locator(mdates.DayLocator())
@@ -123,13 +123,13 @@ def animateLineGraph(df):
         plt.xlim(df.iloc[0]['date'], datetime.today())
         plt.ylim(0, sums['gaming'].max())
         ax.set_title('Category Values Vs Time Animated')
-        ax.set_ylabel('Category Data (m)')
+        ax.set_ylabel('Category data (m)')
         ax.set_xlabel('Date')
         ax.plot(x_values, y_values, label="Productive", color="green")
         ax.plot(x_values, y_values_02, label="Gaming", color="red")
         ax.plot(x_values, y_values_03, label="Difference", color="orange")
         ax.set_title('Category Values Vs Time')
-        ax.set_ylabel('Category Data (m)')
+        ax.set_ylabel('Category data (m)')
         ax.set_xlabel('Date')
         ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
         ax.xaxis.set_minor_locator(mdates.DayLocator())
@@ -172,7 +172,7 @@ def createGamingChart(df):
     # Create the figure and axes
     fig = plt.figure()
     ax = plt.axes()
-    plt.title('Gaming Trend Data', fontsize=30)
+    plt.title('Gaming Trend data', fontsize=30)
     fig.legend(loc='upper left', bbox_to_anchor=(.15, .85))
     weight = 60
     dates = mdates.date2num(df['date'])

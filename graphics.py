@@ -38,7 +38,7 @@ def create_input_frame(container):
 def create_main_window():
     # root window
     root = Tk()
-    root.title('Data Entry')
+    root.title('data Entry')
     root.geometry('250x250')
     root.resizable(0, 0)
 
