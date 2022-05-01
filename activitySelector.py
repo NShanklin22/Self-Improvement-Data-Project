@@ -25,8 +25,6 @@ pd.set_option('display.max_columns', None)
 df = pd.read_csv("data/ActivityLog",index_col = 0)
 df.index = pd.to_datetime(df.index)
 
-print(df.head())
-
 global today
 today = pd.to_datetime(datetime.today().date())
 
@@ -34,6 +32,10 @@ if today in df.index:
     print("okay!")
 else:
     df.at[today] = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+def getActivityMask(df):
+    return
+
 
 def listActivities():
     print("Activity Selector: ")
@@ -48,13 +50,17 @@ def mainMenu(df):
     while True:
         MenuSelect = input("Please select an option: ")
         if MenuSelect == str(1):
-            return
+            viewActivities(df)
         elif MenuSelect == str(2):
-            selectActivity(df)
+            df = selectActivity(df)
         elif MenuSelect == str(3):
             exit()
         else:
             print("That is not a valid option")
+
+def viewActivities(df):
+    TodaysActivies = df.iloc[-1]
+    print(TodaysActivies.where(TodaysActivies != 1).dropna())
 
 def selectActivity(df):
     print("Please complete the following activity: ")
@@ -65,10 +71,11 @@ def selectActivity(df):
         response = input("Did you complete the activity (Y/N)? ")
         if response == "Y":
             df.at[today, activity] += 1
-            return
+            print(df.head())
+            return df
         elif response == "N":
             print("You suck")
-            return
+            return df
         else:
             print("That is not a valid response")
 
