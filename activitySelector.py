@@ -44,9 +44,10 @@ def listActivities():
 
 def mainMenu(df):
     print("Activity Selector")
-    print("1 - Show current activities")
+    print("1 - Show open activities")
     print("2 - Select an activity for me")
-    print("3 - Exit Program")
+    print("3 - Show all entries for today")
+    print("4 - Exit Program")
     while True:
         MenuSelect = input("Please select an option: ")
         if MenuSelect == str(1):
@@ -54,13 +55,24 @@ def mainMenu(df):
         elif MenuSelect == str(2):
             df = selectActivity(df)
         elif MenuSelect == str(3):
-            exit()
+            print("Feature not yet implemented")
+            return
+        elif MenuSelect == str(4):
+            return
         else:
             print("That is not a valid option")
 
 def viewActivities(df):
     TodaysActivies = df.iloc[-1]
-    print(TodaysActivies.where(TodaysActivies != 1).dropna())
+    ActivityList = TodaysActivies.index.tolist()
+    CompleteList = TodaysActivies.values.tolist()
+    for i in range(len(ActivityList)):
+        if(CompleteList[i] > 0.0):
+            print(f"{ ActivityList[i] : <40}{'Complete' : ^10}")
+        else:
+            print(f"{ ActivityList[i] : <40}{'Incomplete' : ^10}")
+
+
 
 def selectActivity(df):
     print("Please complete the following activity: ")
@@ -71,7 +83,6 @@ def selectActivity(df):
         response = input("Did you complete the activity (Y/N)? ")
         if response == "Y":
             df.at[today, activity] += 1
-            print(df.head())
             return df
         elif response == "N":
             print("You suck")

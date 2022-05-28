@@ -37,7 +37,7 @@ WeekStart = CurrentWeek.iloc[0]['WeekStart']
 class PDF(FPDF):
     def header(self):
         # Logo
-        self.image('images/Icon.png', 10, 8, 33)
+        self.image('images/icon.ico', 10, 8, 33)
 
         self.set_font('Arial','B',20)
         w = self.get_string_width(title) + 6
