@@ -6,12 +6,17 @@ from tkinter import ttk
 # Import matplotlib libraries
 import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.figure import Figure
+#from matplotlib.figure import Figure
 import matplotlib.animation as animation
 from matplotlib import style
+from matplotlib import pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
+
 matplotlib.use("TkAgg")
 style.use("ggplot")
 import json
+import os
 
 # Import local functions
 from GUI_Functions import *
@@ -20,13 +25,17 @@ LARGE_FONT = ("Verdana",12)
 NORM_FONT = ("Verdana", 10)
 SMALL_FONT = ("Verdana", 8)
 
+dirname = os.path.dirname(__file__)
+Database = os.path.join(dirname, 'data/PersonalData.db')
 
-connection = sqlite3.connect(r'C:\Users\Shanky\Desktop\Python\Main_Projects\Self_Improvement_Project\data\PersonalData.db')
+#connection = sqlite3.connect(r'C:\Users\Shanky\Desktop\Python\Main_Projects\Self_Improvement_Project\data\PersonalData.db')
+connection = sqlite3.connect(Database)
 cursor = connection.cursor()
-engine = sqlalchemy.create_engine(r'sqlite:///C:\Users\Shanky\Desktop\Python\Main_Projects\Self_Improvement_Project\data\PersonalData.db').connect()
+#engine = sqlalchemy.create_engine(r'sqlite:///C:\Users\Shanky\Desktop\Python\Main_Projects\Self_Improvement_Project\data\PersonalData.db').connect()
+engine = sqlalchemy.create_engine(r'sqlite:///{}'.format(Database)).connect()
 
-f = Figure()
-a = f.add_subplot(111)
+f = plt.figure()
+#a = f.add_subplot(111)
 
 Categories = ['programming', 'gaming', 'electronics', 'design']
 CategoryDict = {"programming":0,"gaming":1,"electronics":0,"design":0}
@@ -41,7 +50,8 @@ botIndicator = "none"
 
 def printQuote():
     # Open the file of quotes, read json, select a random number
-    f = open('C:\\Users\\Shanky\\Desktop\\Python\\Main_Projects\\Self_Improvement_Project\\quotes.json', encoding='UTF-8')
+    #f = open('C:\\Users\\Shanky\\Desktop\\Python\\Main_Projects\\Self_Improvement_Project\\quotes.json', encoding='UTF-8')
+    f = open('{}\\quotes.json'.format(dirname), encoding='UTF-8')
     quoteData = json.load(f)
     randomNum = random.randint(1, 25)
 
@@ -55,7 +65,7 @@ def addNewEntry():
     label = ttk.Label(NewEntry, text="Please enter a date")
     label.pack(side="top",fill="x",pady=10)
     DateEntry = ttk.Entry(NewEntry)
-    DateEntry.insert(0,14)
+    DateEntry.insert(0,datetime.today().date())
     DateEntry.pack()
     DateEntry.focus_set()
 
@@ -74,6 +84,8 @@ def changeChartType(ChartType):
 
 def changeCategory(NewCategory, CategoryVal):
     global CategoryDict
+    print(NewCategory)
+    print(CategoryVal.get())
     CategoryDict[NewCategory] = CategoryVal.get()
     print(CategoryDict)
     return
@@ -95,7 +107,6 @@ def changeReqYear(reqYear):
 
 def popupmsg(msg):
     popup = tk.Tk()
-
     popup.wm_title("!")
     label = ttk.Label(popup,text=msg,font=NORM_FONT)
     label.pack(side="top",fill="x",pady=10)
@@ -112,10 +123,13 @@ def animate(i):
     global month
     global year
 
-
     df = pd.read_sql_table('PersonalData', engine, index_col=1)
 
+    a = plt.subplot2grid((6,4),(0,0),rowspan=5,colspan=4)
+    #a2 = plt.subplot2grid((6,4),(0,0),rowspan=1,colspan=4, sharex = a)
+
     data = None
+    a.clear()
 
     if time == "week":
         data = getDataByCurrentWeek(df)
@@ -126,8 +140,6 @@ def animate(i):
         data = getDataByYear(df,year)
     elif time == "all":
         data = df
-
-    a.clear()
 
 # Create a pie chart
     if chart == 'pie':
@@ -141,7 +153,7 @@ def animate(i):
         DateStart = datetime.strftime(DateTimeRange.iloc[0].date(), "%m-%d-%y")
         DateEnd = datetime.strftime(DateTimeRange.iloc[-1].date(), "%m-%d-%y")
         labels = Categories
-        a.pie(CatPercent, labels=labels, autopct='%1.1f%%', explode = explode, shadow=True, startangle=90)
+        a.pie(CatPercent, labels=labels, autopct='%1.1f%%', colors=['g','r','b','purple'], shadow=True, startangle=90)
         a.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
         title = "Percent Time per Category from {} to {}".format(DateStart,DateEnd)
 
@@ -165,19 +177,23 @@ def animate(i):
     else:
         ChartData = data
         if CategoryDict["programming"] == 1:
-            a.plot_date(ChartData['date'], ChartData['programming'].cumsum(), 'g')
+            a.plot_date(ChartData['date'], ChartData['programming'].cumsum()/3600, 'g')
         if CategoryDict["gaming"] == 1:
-            a.plot_date(ChartData['date'], ChartData['gaming'].cumsum(), 'r')
+            a.plot_date(ChartData['date'], ChartData['gaming'].cumsum()/3600, 'r')
         if CategoryDict["electronics"] == 1:
-            a.plot_date(ChartData['date'], ChartData['electronics'].cumsum(), 'b')
+            a.plot_date(ChartData['date'], ChartData['electronics'].cumsum()/3600, 'b')
         if CategoryDict["design"] == 1:
-            a.plot_date(ChartData['date'], ChartData['design'].cumsum(), 'orange')
+            a.plot_date(ChartData['date'], ChartData['design'].cumsum()/3600, 'purple')
 
+        a.set_xlabel("Date")
+        a.set_ylabel("Time Logged (h)")
         title = "Data vs Time"
 
-
-    a.legend()
-    a.set_title(title)
+        a.xaxis.set_major_locator(mticker.MaxNLocator(30))
+        a.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d-%Y"))
+        plt.xticks(rotation=45)
+        a.legend('A')
+        a.set_title(title)
 
 # Add inheritants to the parentheses
 class SelfImprovementApp(tk.Tk):
@@ -209,19 +225,19 @@ class SelfImprovementApp(tk.Tk):
         menubar.add_cascade(label="File",menu=filemenu)
 
         # Adding the category change option
-        categoryChoice = tk.Menu(menubar,tearoff=1)
+        categoryChoice = tk.Menu(menubar,tearoff=0)
         GamingVar = tk.IntVar(self,1)
         categoryChoice.add_checkbutton(label="Gaming", variable = GamingVar, onvalue=1,offvalue=0, command= lambda: changeCategory("gaming", GamingVar))
-        DesignVar = tk.IntVar()
+        DesignVar = tk.IntVar(self,0)
         categoryChoice.add_checkbutton(label="Design", variable= DesignVar, onvalue=1,offvalue=0, command=lambda: changeCategory("design", DesignVar))
-        ElectronicsVar = tk.IntVar()
+        ElectronicsVar = tk.IntVar(self,0)
         categoryChoice.add_checkbutton(label="Electronics",  variable= ElectronicsVar, command=lambda: changeCategory("electronics", ElectronicsVar))
-        ProgrammingVar = tk.IntVar()
+        ProgrammingVar = tk.IntVar(self,0)
         categoryChoice.add_checkbutton(label="Programming",variable = ProgrammingVar, onvalue=1,offvalue=0,command=lambda: changeCategory("programming", ProgrammingVar))
         menubar.add_cascade(label="Category", menu=categoryChoice)
 
         # Adding time frame data to the menu bar
-        TimeFrame = tk.Menu(menubar,tearoff=1)
+        TimeFrame = tk.Menu(menubar,tearoff=0)
         TimeFrame.add_command(label="Week",command=lambda: changeTimeFrame('week'))
         TimeFrame.add_command(label="Month", command=lambda: changeTimeFrame('month'))
         TimeFrame.add_command(label="Year", command=lambda: changeTimeFrame('year'))
@@ -229,7 +245,7 @@ class SelfImprovementApp(tk.Tk):
         menubar.add_cascade(label= "Data Time Frame", menu=TimeFrame)
 
         # Adding the graph type option
-        ChartType = tk.Menu(menubar, tearoff=1)
+        ChartType = tk.Menu(menubar, tearoff=0)
         ChartType.add_command(label="Bar Chart", command=lambda: changeChartType('bar'))
         ChartType.add_command(label = "Line Chart", command = lambda: changeChartType('line'))
         ChartType.add_command(label = "Pie Chart", command = lambda: changeChartType('pie'))
