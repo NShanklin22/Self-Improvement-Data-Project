@@ -13,7 +13,7 @@ from otherFunctions import *
 # Functions
 def createBarChart(DataRange):
     # Create a bar chart
-    labels = ['Programming', 'Gaming', 'Electronics', 'Design']
+    labels = ['Programming', 'Gaming', 'Electronics', 'Design', 'Finance']
     DateTimeRange = pd.to_datetime(DataRange['date'])
     data = DataRange.drop('date',axis=1).sum()
     data = data / 60
@@ -43,7 +43,7 @@ def createPieChart(DataRange):
     DateEnd = datetime.strftime(DateTimeRange.iloc[-1].date(),"%m-%d-%y")
 
     # Create the pie chart and set the settings
-    labels = 'Programming', 'Gaming', 'Electronics', 'Design'
+    labels = 'Programming', 'Gaming', 'Electronics', 'Design','Finance'
     fig1, ax1 = plt.subplots()
     fig1.set_size_inches(10.5, 10.5)
 
@@ -102,8 +102,9 @@ def animateLineGraph(df):
     y_values_03 = []
     sums = df[["gaming", "programming", "design", "electronics"]].cumsum()
     df['date'] = pd.to_datetime(df['date'])
-    sums['productive'] = sums['programming'] + sums['electronics'] + sums['design']
-    sums['difference'] = sums['gaming'] - sums['productive']
+    sums['productive'] = (sums['programming'] + sums['electronics'] + sums['design'])/3600
+    sums['difference'] = sums['gaming']/3600 - sums['productive']
+    sums['gaming'] = sums['gaming']/3600
 
     # This section is a stagnate graph showing the data for the entire time range
     # Create the figure and axes

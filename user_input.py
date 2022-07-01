@@ -21,8 +21,8 @@ df = pd.read_sql_table('PersonalData', engine, index_col=1)
 # Asks user for the category of the data
 def getCategory():
     while True:
-        value = str(input("Please Enter the data category (programming,gaming,electronics,design): "))
-        if value == "electronics" or value == "programming" or value == "gaming" or value == "design":
+        value = str(input("Please Enter the data category (programming,gaming,electronics,design,finance): "))
+        if value == "electronics" or value == "programming" or value == "gaming" or value == "design" or value == 'finance':
             break
         else:
             print("That is not a valid category, please try again")
@@ -73,13 +73,15 @@ def get_sec(time_str):
 def addEntryToDataframe(df, category, date, duration):
     # Use the match function to update the dataframe depending on catagory passed into this function
     if (category == 'programming'):
-        new_data = {'date': str(date), 'programming': duration, 'gaming': 0, 'electronics': 0, 'design': 0}
+        new_data = {'date': str(date), 'programming': duration, 'gaming': 0, 'electronics': 0, 'design': 0, 'finance': 0}
     if (category == 'gaming'):
-        new_data = {'date': str(date), 'programming': 0, 'gaming': duration, 'electronics': 0, 'design': 0}
+        new_data = {'date': str(date), 'programming': 0, 'gaming': duration, 'electronics': 0, 'design': 0, 'finance': 0}
     if (category == 'electronics'):
-        new_data = {'date': str(date), 'programming': 0, 'gaming': 0, 'electronics': duration, 'design': 0}
+        new_data = {'date': str(date), 'programming': 0, 'gaming': 0, 'electronics': duration, 'design': 0, 'finance': 0}
     if (category == 'design'):
-        new_data = {'date': str(date), 'programming': 0, 'gaming': 0, 'electronics': 0, 'design': duration}
+        new_data = {'date': str(date), 'programming': 0, 'gaming': 0, 'electronics': 0, 'design': duration, 'finance': 0}
+    if (category == 'finance'):
+        new_data = {'date': str(date), 'programming': 0, 'gaming': 0, 'electronics': 0, 'design': 0, 'finance': duration}
 
     # Create a new single row series based off of the new data
     new_row = pd.DataFrame(new_data, index=[0])
