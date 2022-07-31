@@ -9,6 +9,7 @@ from datetime import datetime
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 from otherFunctions import *
+import datetime
 
 # Functions
 def createBarChart(DataRange):
@@ -116,30 +117,36 @@ def animateLineGraph(df):
     # plt.xlim(pd.Timestamp('2021-07-15'), pd.Timestamp('2022-02-20'))
     fig.autofmt_xdate()
     fig.set_size_inches(18, 10)
+    an =  ax.annotate("Difference = {}".format(sums.iloc[-1]['difference']), xy=(df.iloc[-50]['date'].date(), 250),xytext=(df.iloc[-100]['date'].date(),150), arrowprops=dict(arrowstyle="->", color='black'))
 
     for i in range(len(df)):
         x_values.append(df.iloc[i]['date'].date())
         y_values.append(sums.iloc[i]['productive'])
         y_values_02.append(sums.iloc[i]['gaming'])
         y_values_03.append(sums.iloc[i]['difference'])
+        print(sums.iloc[i]['difference'])
         plt.ylim(0, sums['gaming'].max())
         ax.set_title('Category Values Vs Time Animated')
         ax.set_ylabel('Category data (m)')
         ax.set_xlabel('Date')
+        ax.set_ylim([0, 500])
+        ax.set_xlim([df.iloc[0]['date'].date(),df.iloc[-1]['date'].date() + datetime.timedelta(days=14)])
         ax.plot(x_values, y_values, label="Productive", color="green")
         ax.plot(x_values, y_values_02, label="Gaming", color="red")
         ax.plot(x_values, y_values_03, label="Difference", color="orange")
         ax.set_title('Category Values Vs Time')
-        ax.set_ylabel('Category data (m)')
+        ax.set_ylabel('Category data (h)')
         ax.set_xlabel('Date')
-        ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
+        ax.xaxis.set_major_locator(mdates.DayLocator(interval=14))
         ax.xaxis.set_minor_locator(mdates.DayLocator())
         ax.grid(True)
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+        an.xy = xy=(df.iloc[i]['date'].date(), sums.iloc[i]['difference'])
+        an.set_text("Difference = {} hours".format(round(sums.iloc[i]['difference'],2)))
         if (i == 0):
             fig.legend(loc='upper left', bbox_to_anchor=(.15, .85))
-        if(i > len(df) - 60):
-            plt.pause(.1)
+        #if(i > len(df) - 60):
+        plt.pause(.01)
 
     plt.show()
     input("Press any key to continue...")
@@ -158,7 +165,7 @@ def animatePieChart(df):
         CatPercent = (CatTotal / RangeTotal * 100)
 
         # Create the pie chart and set the settings
-        labels = ['Programming', 'Gaming', 'Electronics', 'Design']
+        labels = ['Programming', 'Gaming', 'Electronics', 'Design','Finance']
         ax1.pie(CatPercent, labels=labels, autopct='%1.1f%%',
                 shadow=True, startangle=90)
         ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.

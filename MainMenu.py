@@ -94,6 +94,7 @@ def pullEntryMenu():
         DataRange = getDataByMonth(df)
     elif MenuSelect == '6':
         DataRange = getDataByYear(df)
+
     elif MenuSelect == '7':
         mainMenu()
 
@@ -119,7 +120,7 @@ def analysisMenu(df):
         return
 
     return
-
+# TODO: Be nate
 # Function for selecting the visualization method
 def visualMenu(DataRange):
     while True:

@@ -66,6 +66,7 @@ midIndicator = "none"
 botIndicator = "none"
 DisplayTrend = 0
 EntryResponse = ""
+mergeData = 0
 
 def addEntryToDataframe(category, date, duration):
     global EntryResponse
@@ -143,7 +144,7 @@ def getKeyInfo(Category):
 
     # Determine average time logged per day
     CurrentAvgLogged = round(df.iloc[-30:][Category].mean()/60,2)
-    PreviousAvgLogged = round(df.iloc[-31:-1][Category].mean()/60,2)
+    PreviousAvgLogged = round(df.iloc[--60:-30][Category].mean()/60,2)
     AvgLoggedChange = round(CurrentAvgLogged - PreviousAvgLogged,2)
 
     KeyInfo['LastDay'] = LastDate
@@ -176,6 +177,11 @@ def printQuote():
 def enableTrendline(EnaDis):
     global DisplayTrend
     DisplayTrend = EnaDis.get()
+    return
+
+def enableMergeData(EnaDis):
+    global mergeData
+    mergeData = EnaDis.get()
     return
 
 def changeChartType(ChartType):
@@ -216,6 +222,7 @@ def animate(i):
     global month
     global year
     global DisplayTrend
+    global mergeData
 
     df = pd.read_sql_table('PersonalData', engine, index_col=1)
 
@@ -278,123 +285,139 @@ def animate(i):
 
 # Create a line chart
     else:
-        ChartData = data
-        if CategoryDict["programming"] == 1:
+        if mergeData == 1:
+            sums = df[["gaming", "programming", "design", "electronics","finance"]].cumsum()
+            df['date'] = pd.to_datetime(df['date'])
+            sums['productive'] = (sums['programming'] + sums['electronics'] + sums['design'] +  sums['finance']) / 3600
+            sums['difference'] = sums['gaming'] / 3600 - sums['productive']
+            sums['gaming'] = sums['gaming'] / 3600
+            x_dates = df['date']
+            y1 = sums['gaming']
+            y2 = sums['productive']
+            y3 = sums['difference']
+            a.plot_date(x_dates, y1, 'r', label='Unproductive')
+            a.plot_date(x_dates, y2, 'g', label='Productive')
+            a.plot_date(x_dates, y3, 'y', label='Difference')
+            title = "Productive Data vs Time"
 
-            # Set the x and y for basic line plot
-            x_dates = ChartData['date']
-            y = ChartData['programming'].cumsum() / 3600
-            # If option is select create a trend line
-            if DisplayTrend == 1:
+        else:
+            ChartData = data
+            if CategoryDict["programming"] == 1:
 
-                # Set the x values for trendline (convert to num)
-                x_num = dates.date2num(x_dates)
+                # Set the x and y for basic line plot
+                x_dates = ChartData['date']
+                y = ChartData['programming'].cumsum() / 3600
+                # If option is select create a trend line
+                if DisplayTrend == 1:
 
-                # Calculate the trend line
-                trend = np.polyfit(x_num, y, 1)
-                fit = np.poly1d(trend)
+                    # Set the x values for trendline (convert to num)
+                    x_num = dates.date2num(x_dates)
 
-                # Create the fit
-                x_fit = np.linspace(x_num.min(), x_num.max())
-                a.plot(dates.num2date(x_fit), fit(x_fit), "g--")
-                a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
-                           xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
-                           arrowprops=dict(arrowstyle="->", color='black'))
-            a.plot_date(x_dates, y, 'g',label='Programming')
+                    # Calculate the trend line
+                    trend = np.polyfit(x_num, y, 1)
+                    fit = np.poly1d(trend)
 
-        if CategoryDict["gaming"] == 1:
-            # Set the x and y for basic line plot
-            x_dates = ChartData['date']
-            y = ChartData['gaming'].cumsum() / 3600
-            # If option is select create a trend line
-            if DisplayTrend == 1:
+                    # Create the fit
+                    x_fit = np.linspace(x_num.min(), x_num.max())
+                    a.plot(dates.num2date(x_fit), fit(x_fit), "g--")
+                    a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
+                               xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
+                               arrowprops=dict(arrowstyle="->", color='black'))
+                a.plot_date(x_dates, y, 'g',label='Programming')
 
-                # Set the x values for trendline (convert to num)
-                x_num = dates.date2num(x_dates)
+            if CategoryDict["gaming"] == 1:
+                # Set the x and y for basic line plot
+                x_dates = ChartData['date']
+                y = ChartData['gaming'].cumsum() / 3600
+                # If option is select create a trend line
+                if DisplayTrend == 1:
 
-                # Calculate the trend line
-                trend = np.polyfit(x_num, y, 1)
-                slope = np.polyfit(x_num, y, 1)
-                print(slope)
-                fit = np.poly1d(trend)
+                    # Set the x values for trendline (convert to num)
+                    x_num = dates.date2num(x_dates)
 
-                # Create the fit
-                x_fit = np.linspace(x_num.min(), x_num.max())
-                a.plot(dates.num2date(x_fit), fit(x_fit), "r--")
-                a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
-                           xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
-                           arrowprops=dict(arrowstyle="->", color='black'))
-            a.plot_date(x_dates, y, 'r',label='Gaming')
+                    # Calculate the trend line
+                    trend = np.polyfit(x_num, y, 1)
+                    slope = np.polyfit(x_num, y, 1)
+                    print(slope)
+                    fit = np.poly1d(trend)
 
-        if CategoryDict["electronics"] == 1:
-            # Set the x and y for basic line plot
-            x_dates = ChartData['date']
-            y = ChartData['electronics'].cumsum() / 3600
-            # If option is select create a trend line
-            if DisplayTrend == 1:
+                    # Create the fit
+                    x_fit = np.linspace(x_num.min(), x_num.max())
+                    a.plot(dates.num2date(x_fit), fit(x_fit), "r--")
+                    a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
+                               xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
+                               arrowprops=dict(arrowstyle="->", color='black'))
+                a.plot_date(x_dates, y, 'r',label='Gaming')
 
-                # Set the x values for trendline (convert to num)
-                x_num = dates.date2num(x_dates)
+            if CategoryDict["electronics"] == 1:
+                # Set the x and y for basic line plot
+                x_dates = ChartData['date']
+                y = ChartData['electronics'].cumsum() / 3600
+                # If option is select create a trend line
+                if DisplayTrend == 1:
 
-                # Calculate the trend line
-                trend = np.polyfit(x_num, y, 1)
-                fit = np.poly1d(trend)
+                    # Set the x values for trendline (convert to num)
+                    x_num = dates.date2num(x_dates)
 
-                # Create the fit
-                x_fit = np.linspace(x_num.min(), x_num.max())
-                a.plot(dates.num2date(x_fit), fit(x_fit), "b--")
-                a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
-                           xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
-                           arrowprops=dict(arrowstyle="->", color='black'))
-            a.plot_date(x_dates, y, 'b',label='Electronics')
+                    # Calculate the trend line
+                    trend = np.polyfit(x_num, y, 1)
+                    fit = np.poly1d(trend)
 
-        if CategoryDict["design"] == 1:
-            # Set the x and y for basic line plot
-            x_dates = ChartData['date']
-            y = ChartData['design'].cumsum() / 3600
-            # If option is select create a trend line
-            if DisplayTrend == 1:
+                    # Create the fit
+                    x_fit = np.linspace(x_num.min(), x_num.max())
+                    a.plot(dates.num2date(x_fit), fit(x_fit), "b--")
+                    a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
+                               xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
+                               arrowprops=dict(arrowstyle="->", color='black'))
+                a.plot_date(x_dates, y, 'b',label='Electronics')
 
-                # Set the x values for trendline (convert to num)
-                x_num = dates.date2num(x_dates)
+            if CategoryDict["design"] == 1:
+                # Set the x and y for basic line plot
+                x_dates = ChartData['date']
+                y = ChartData['design'].cumsum() / 3600
+                # If option is select create a trend line
+                if DisplayTrend == 1:
 
-                # Calculate the trend line
-                trend = np.polyfit(x_num, y, 1)
-                fit = np.poly1d(trend)
+                    # Set the x values for trendline (convert to num)
+                    x_num = dates.date2num(x_dates)
 
-                # Create the fit
-                x_fit = np.linspace(x_num.min(), x_num.max())
-                a.plot(dates.num2date(x_fit), fit(x_fit), "m--")
-                a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
-                           xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
-                           arrowprops=dict(arrowstyle="->", color='black'))
-            a.plot_date(x_dates,y, 'purple',label='Design')
+                    # Calculate the trend line
+                    trend = np.polyfit(x_num, y, 1)
+                    fit = np.poly1d(trend)
 
-        if CategoryDict["finance"] == 1:
-            # Set the x and y for basic line plot
-            x_dates = ChartData['date']
-            y = ChartData['finance'].cumsum() / 3600
-            # If option is select create a trend line
-            if DisplayTrend == 1:
+                    # Create the fit
+                    x_fit = np.linspace(x_num.min(), x_num.max())
+                    a.plot(dates.num2date(x_fit), fit(x_fit), "m--")
+                    a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
+                               xytext=(dates.num2date(x_num.mean()),fit(x_fit).mean() + y.max()*.2 ),
+                               arrowprops=dict(arrowstyle="->", color='black'))
+                a.plot_date(x_dates,y, 'purple',label='Design')
 
-                # Set the x values for trendline (convert to num)
-                x_num = dates.date2num(x_dates)
+            if CategoryDict["finance"] == 1:
+                # Set the x and y for basic line plot
+                x_dates = ChartData['date']
+                y = ChartData['finance'].cumsum() / 3600
+                # If option is select create a trend line
+                if DisplayTrend == 1:
 
-                # Calculate the trend line
-                trend = np.polyfit(x_num, y, 1)
-                fit = np.poly1d(trend)
+                    # Set the x values for trendline (convert to num)
+                    x_num = dates.date2num(x_dates)
 
-                # Create the fit
-                x_fit = np.linspace(x_num.min(), x_num.max())
-                a.plot(dates.num2date(x_fit), fit(x_fit), "y--")
-                a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
-                           xytext=(dates.num2date(x_num.mean()), fit(x_fit).mean() + y.max()*.2 ),
-                           arrowprops=dict(arrowstyle="->", color='black'))
-            a.plot_date(x_dates,y, 'yellow',label='Finance')
+                    # Calculate the trend line
+                    trend = np.polyfit(x_num, y, 1)
+                    fit = np.poly1d(trend)
+
+                    # Create the fit
+                    x_fit = np.linspace(x_num.min(), x_num.max())
+                    a.plot(dates.num2date(x_fit), fit(x_fit), "y--")
+                    a.annotate("Slope = {}".format(round(trend[0],2)), xy=(dates.num2date(x_num.mean()), fit(x_fit).mean()),
+                               xytext=(dates.num2date(x_num.mean()), fit(x_fit).mean() + y.max()*.2 ),
+                               arrowprops=dict(arrowstyle="->", color='black'))
+                a.plot_date(x_dates,y, 'yellow',label='Finance')
+            title = "Data vs Time: {}".format(dataRangeStr)
 
         a.set_xlabel("Date")
         a.set_ylabel("Time Logged (h)")
-        title = "Data vs Time: {}".format(dataRangeStr)
         a.legend()
         a.xaxis.set_major_locator(mticker.MaxNLocator(30))
         a.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d-%Y"))
@@ -484,7 +507,9 @@ class SelfImprovementApp(tk.Tk):
         # Add menu for graph options
         GraphOptions = tk.Menu(menubar, tearoff=0)
         EnableTrendline = tk.IntVar(self, 0)
+        MergeData = tk.IntVar(self, 0)
         GraphOptions.add_checkbutton(label="Add Trendline", variable=EnableTrendline,command=lambda: enableTrendline(EnableTrendline))
+        GraphOptions.add_checkbutton(label="Merge Data", variable=MergeData,command=lambda: enableMergeData(MergeData))
         # GraphOptions.add_command(label="Show Trend Line (TBD)")
         # GraphOptions.add_command(label="TBD")
         # GraphOptions.add_command(label="TBD")

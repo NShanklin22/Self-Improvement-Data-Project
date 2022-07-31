@@ -45,7 +45,8 @@ def getDataByMonth(df,ReqMonth):
         # Ask the user for a month to pull data from and cast as an int
         # Check if the month provided is a valid month
         if ReqMonth in months:
-            MonthData = df.where(df['date'].dt.month==ReqMonth).dropna()
+            MonthData = df.where(df['date'].dt.year == datetime.now().year).dropna()
+            MonthData = MonthData.where(df['date'].dt.month==ReqMonth).dropna()
             if MonthData.empty:
                 print("There is no data for that month")
                 MonthData = df.where(df['date'].dt.month == datetime.now().month).dropna()
